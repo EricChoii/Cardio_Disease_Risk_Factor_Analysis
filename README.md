@@ -48,7 +48,7 @@ Whether cardiovascular disease is a genetic disease. And if it is, is there sign
 
 Figure: The x-axis Famhist represents whether there is a family history of heart disease; 0 - don’t have; 1 - have
 
-## [1] 0.01400102
+[1] 0.01400102
 From the first graph, the probability of having a cardiovascular disease with family heart disease history is 50%, for those who don’t have reached 24%. It is clear that people with a family heart disease history have a higher risk of having cardiovascular disease.
 From the second graph, to verify the hypothesis that whether 50% of patients have a family heart disease history, we make the hypothesis:
 h0: p = 0.5, h1: p != 0.5. 
