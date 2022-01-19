@@ -1,0 +1,266 @@
+---
+title: "STAT 240 Draft 1"
+output: html_document
+---
+## Group
+- 312 A
+
+## Names
+- Colm Fitzsimmons
+- Eric Choi
+- Sanaya Kapadia
+- **Yingwei Song**
+
+## Introduction
+  Cardiovascular disease is one of the most frequent diseases that threaten people's health problems. Discussing the relationship between different factors which might cause cardiovascular disease might help us to prevent it. For example, whether there is a relationship between age, smoke, alcohol and the cardiovascular disease? These question could be extremely useful to examine the relationship between different information.
+  
+  This report will reveal the positive relationship between age, alcohol, tobacco intake, and cardiovascular disease. Also, the analysis will show it is a genetic disease, and 50% percent of patients have a family history. Finally, people with cardiovascular disease will have higher systolic blood pressure between the range of 4.07 mm Hg and 12.48 mm Hg compared to healthy people.
+  
+## Background
+
+ The Cardiovascular Disease data set will be used is submitted by Yassine Hamdaoui on [Kaggle](https://www.kaggle.com/yassinehamdaoui1/cardiovascular-disease). It recorded detailed information collected by medical examination from a larger data set in 1983. The larger original cardiovascular disease data set consists of 462 observations with 10 variables. The data set is a retrospective sample of males in a heart-disease high-risk region of the Western Cape, South Africa. And the full data set were described in Rousseauw et al, 1983, South African Medical Journal. The detailed sourse is: Rousseauw, J., du Plessis, J., Benade, A., Jordaan, P., Kotze, J. and Ferreira, J. (1983). Coronary risk factor screening in three rural communities, South African Medical Journal 64: 430–436. ElemStatLearn, R-Package
+
+The data set have the 10 variables, but we will only focus the following key variables:
+
+- sbp: systolic blood pressure
+- tobacco: cumulative tobacco (kg)
+- famhist: family history of heart disease, a factor with levels "Absent" and "Present"
+- alcohol: current alcohol consumption
+- age: age at onset
+- chd: response, coronary heart disease
+
+Data limitations declaration：
+  Due to the original data are only retrieved from high-risk heart-disease areas in Africa, this may lead to the geographical limitation and affect the interpretation of results. But by analyzing the data from such high-risk area, the significant relationship and features can be found.  
+  
+The remainder of the report will examine the following questions:
+
+1. Is there a relationship between age and cardiovascular disease except all the other factors?
+2. Is there a relationship between alcohol,tobacoo intake and cardiovascular disease except all the other factors?
+3. Is cardiovascular disease a genetic disease? If so, is there significant evidence showing that 50% patients having a family heart disease history?
+4. What is difference between the average range of systolic blood pressure for a healthy person and a patient?
+
+## Analysis
+### Relationship between age and cardiovascular disease except all the other factors
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(tidyverse)
+library("scales")
+source("../../scripts/ggprob.R")
+source("../../scripts/viridis.R")
+
+```
+```{r echo = FALSE}
+data = read.csv2("./cardiovascular.txt")
+data = data %>% mutate(cardio = chd)
+age_cardio = data %>%
+  select(age, cardio) %>%
+  mutate(age_group = case_when(
+                               age <= 20 ~ "0 - 20",
+                               age <= 25 ~ "21 - 25",
+                               age <= 30 ~ "26 - 30",
+                               age <= 35 ~ "31 - 35",
+                               age <= 40 ~ "36 - 40",
+                               age <= 45 ~ "41 - 45",
+                               age <= 50 ~ "46 - 50",
+                               age <= 55 ~ "51 - 55",
+                               age <= 60 ~ "56 - 60",
+                               age <= 65 ~ "61 - 65"))
+age_cardio_new = age_cardio %>%
+  select(age, age_group, cardio) %>%
+  group_by(age_group) %>%
+  summarise(population = n(), cardio = sum(cardio), percent = cardio / population)
+age_plot = ggplot(age_cardio_new) +
+  geom_bar(aes(x = age_group, y = population), stat = "identity") +
+  geom_bar(aes(x = age_group, y = cardio, fill = cardio), stat = "identity", fill = "brown3") +
+  geom_text(aes(x = age_group, y = percent, label = percent(percent)),vjust=-4) +
+  xlab("Age Group") +
+  ylab("Population") +
+  ggtitle("Relationship between age and cardiovascular disease") +
+  theme_bw()
+age_percent_plot = ggplot(age_cardio_new) +
+  geom_point(aes(x = age_group, y = percent),color = "royalblue") +
+  geom_smooth(aes(x = age_group, y = percent, group = 1), method = "lm", se = FALSE, color = "royalblue") +
+  xlab("Age Group") +
+  ylab("Percentage") +
+  ggtitle("Relationship between age and cardiovascular disease") +
+  theme_bw()
+age_plot
+age_percent_plot
+```
+
+  For the first graph, the average percentage of having cardiovascular is around 10% in younger age group 26-35 years old. For the age group 31-50, the percentage increased and remained around 28%. Then for the elder age group from 51-65, the figure for that increased even higher and reached 55% percentage. 
+  
+  Then using the linear method to draw the prediction line of the relationship between  age group and the percentage of having cardiovascular disease, as the the second graph shows above. The positive slop between the two variables indicate the positive relationship in further. 
+  
+  Therefore, it can be claimed that the age and the risk of having cardiovascular disease except all the other factors are positively related. Combine with the first and second graph, it is clear to figure out that while the age is increasing, a higher percentage of cardiovascular occur.
+  
+---
+
+### Relationship between alcohol,tobacoo intake and cardiovascular disease except all the other factors
+```{r echo = FALSE}
+alc_cardio = data %>%
+  select(alcohol, cardio, tobacco) %>%
+  mutate(alcohol = as.double(alcohol), tobacco = as.double(tobacco), cardio = as.character(cardio)) %>%
+  ggplot() +
+  geom_density(aes(x = alcohol, color = cardio))+
+  ggtitle("Density Graph of Alcohol intake and cardiovascular disease")
+alc_cardio
+alc_cardio = data %>%
+  select(alcohol, cardio, tobacco) %>%
+  mutate(alcohol = as.double(alcohol), tobacco = as.double(tobacco), cardio = as.character(cardio)) %>%
+  ggplot() +
+  geom_density(aes(x = tobacco, color = cardio))+
+  ggtitle("Density Graph of Tobacco intake and cardiovascular disease")
+alc_cardio
+```
+
+**The legend "cardio" represent whether have the cardiovascular disease. 0 - don't have cardiovascular disease; 1 - have cardiovascular disease**
+
+  These two graphs above show the density distribution of alcohol intake and tobacco intake respectively. From the two graphs, the yellow lines, which represent the cardiovascular percentage, are almost always above the purple line. And the density of healthy people who don't intake alcohol and tobacco is extremely higher than those people with cardiovascular disease, which indicates that people in the population who don't intake alcohol and tobacco have a low percentage of having cardiovascular. Also, for the second graph, the tobacco one, the density gap between healthy one and patient is significant. The method we used here is by comparing the density graph between healthy people and patients.
+  
+  Therefore, we can claim that with the alcohol and tobacco intake increasing, a higher percentage risk of having cardiovascular disease appears.
+
+---
+
+### Whether cardiovascular disease is a genetic disease. And if it is, is there significant evidence showing that 50% patients having a family heart disease history?
+```{r echo = FALSE}
+famhist_cardio = data %>%
+  select(famhist, cardio) %>%
+  mutate(famhist_boolean = case_when(famhist == "Present" ~ 1,
+                                     famhist == "Absent" ~ 0)) %>%
+  group_by(famhist_boolean) %>%
+  summarise(cardio = sum(cardio), percentage = cardio/n()) %>%
+  ggplot()+
+  geom_col(aes(x = as.character(famhist_boolean), y = percentage*100),fill='hotpink', color='black') +
+  geom_text(aes(x = as.character(famhist_boolean), y =percentage*100, label = percent(percentage)),vjust=10) +
+  ggtitle("Probability of Cardio by Family history") +
+  xlab("Family history") +
+  ylab("Probobilities") +
+  theme_bw()
+famhist_cardio
+```
+
+**The x-axis Famhist represent whether there is a family history of heart disease. 0 - don't have; 1 - have**
+
+```{r echo = FALSE}
+famhist_cardio = data %>%
+  filter(cardio == 1) %>%
+  select(famhist, cardio) %>%
+  mutate(famhist_boolean = case_when(famhist == "Present" ~ 1,
+                                     famhist == "Absent" ~ 0)) 
+
+#famhist_cardio
+pvalue = pbinom(80-16, 160, 0.5) + (1 - pbinom(95,160, 0.5))
+
+n = 160
+x = 160
+p = 0.5
+mu = n*p
+sigma = sqrt(n*p*(1-p))
+gbinom(160, 0.5, scale=TRUE) +
+  geom_vline(xintercept=80-16, color="red",
+             linetype="dashed") +
+  geom_vline(xintercept=96, color="red",
+             linetype="dashed") +
+  geom_norm_density(mu, sigma, color = "red") +
+  geom_norm_fill(mu, sigma, b = 80-16, color = "red")+
+  geom_norm_fill(mu, sigma, a = 96, color = "red") +
+  theme_bw() +
+  ggtitle("Confidence interval of heart disease for having family history")
+pvalue
+```
+
+  From the first graph, the probability of having a cardiovascular disease with family heart disease history is higher is 50%, those who don't have reached 24%. It is clear that people with a family heart disease history have higher risk to have cardiovascular disease.
+
+  From the second graph, to verify the hypothesis that whether 50% of patients have a family heart disease history, we make the hypothesis:
+  
+    h0: p = 0.5, h1: p != 0.5. 
+  
+  Then set the model: 
+  
+    X | p ~ Binomial(160,  p), n = 160, x = 96
+  
+  Then we get the p-value is 0.0140, two-side test.
+  
+  Therefore, we can claim that cardiovascular is a genetic disease, and there is a significant evidence that the 50% of patients having a family heart disease history(p=0.014, two-sided binomial test).
+
+---
+
+### Diffenrence between the average range of systolic blood pressure for a healthy person and a patient
+```{r echo = FALSE}
+data %>%
+  mutate(cardio = as.character(cardio)) %>%
+  ggplot(aes(x = cardio, y = sbp, fill = cardio)) +
+  geom_boxplot(coef = Inf, alpha = 0.5) +
+  geom_point(position = position_jitter(width=0.3, height=0)) +
+  xlab("Cardiovascular disease") +
+  ylab("Systolic blood pressure") +
+  ggtitle("Comparison of systolic blood pressure") +
+  theme_minimal()
+
+q4_a = data %>%
+  select(sbp,  cardio) %>%
+  filter(cardio == 0)
+q4_b = data %>%
+  select(sbp,cardio) %>%
+  filter(cardio == 1)
+ap_hi_mean_a = mean(q4_a$sbp)
+ap_hi_sigma_a = sd(q4_a$sbp) 
+ap_hi_mean_b = mean(q4_b$sbp)
+ap_hi_sigma_b = sd(q4_b$sbp)
+gnorm(ap_hi_mean_a,ap_hi_sigma_a) +
+    geom_vline(xintercept=ap_hi_mean_a, color="blue",
+             linetype="dashed") +  
+  geom_vline(xintercept=ap_hi_mean_b, color="magenta",
+             linetype="dashed") +
+ #geom_norm_fill(ap_hi_mean_a, ap_hi_sigma_a, a=ap_hi_mean_a - ap_hi_sigma_a, b=ap_hi_mean_a + ap_hi_sigma_a) +
+geom_norm_density(ap_hi_mean_b, ap_hi_sigma_b, color = "magenta") +
+  #geom_norm_fill(ap_hi_mean_b, ap_hi_sigma_b, a=ap_hi_mean_b - ap_hi_sigma_b, b=ap_hi_mean_b + ap_hi_sigma_b, color = "magenta") 
+  ggtitle("Normal distribution of systolic blood pressure for healthy person and patient") +
+  theme_bw()
+
+x_health = data %>% filter(cardio == 0) %>% pull(sbp)
+x_patient = data %>% filter(cardio == 1) %>% pull(sbp)
+#t.test(x_patient,x_health)
+gt(258, a = -5, b = 5, color = "black") +
+  geom_t_fill(258, a = -5, b = -3.87) +
+  geom_t_fill(258, a = 3.87, b = 5) +
+  geom_vline(xintercept=-3.87, color="green",
+             linetype="dashed") +
+  geom_vline(xintercept=3.87, color="green",
+             linetype="dashed") +
+  xlab("t statistic") +
+  ggtitle("P-value visualization",
+          subtitle = "258 df, t = -3.87") +
+  theme_minimal()
+```
+
+**The blue line represent the distribution for healthy person, and the red line represent the patients**
+
+  The first box plot shows the distribution of systolic blood pressure for healthy people and cardiovascular disease patients respectively. It is clear that the figure for health people cluster at the lower level compared to the patients. The mean blood pressure for healthy people is around 130 and the patient is around 135. The second graph drawing the normal distribution of systolic blood pressure for healthy person and patient. The sigma for patient is higher than the healthy one. To figure out the statistical average range of systolic blood pressure relationship between healthy people and patients, we compared the two Independent means:
+  
+    Xi∼F1(μ1,σ1),i=1,…,n1
+    Yi∼F2(μ2,σ2),i=1,…,n2
+    
+   The third graph show the p-value line on the density graph, which indicate p-value= 0.00013
+   
+   Therefore, we can claim that after doing the hypothesis test, we are 95% confident that the mean systolic blood pressure of patients is between 4.07 mm Hg and 12.48 mm Hg higher than the mean pressure of healthy people who do not have cardiovascular disease.
+
+## Discussion
+  For the relationship between age and cardiovascular disease, we can strongly recognize that with higher age, people have a higher percentage of risk to have cardiovascular disease. It follows the normal sense because the physiology of the elderly will deteriorate. One significant point to mention is the age groups 40s and 50s. The risk of having heart disease increase dramatically between the two age group. Therefore, future research might be discussed to figure out what causes such a gap. 
+  
+  For the relationship between drinking, smoking, and cardiovascular disease. We can infer that drinking and smoking are highly possible to lead to cardiovascular disease. Also, the larger gap shown in the tobacco taking graph indicates that tobacco might have a higher influence on cardiovascular disease. 
+  
+  For the question discover whether cardiovascular disease is a genetic disease, we can conclude from the chart above that 50% of people who have a family heart disease history will have cardiovascular, which shows a strong relationship to inheritance. 
+  
+  For the last question we analyzed in this report, the proofs are more accurate and reliable due to the use of the hypothetical test and confidence interval. We compared the two independent means then discover that the systolic blood pressure for patients is between 4.07 mm Hg and 12.48 mm Hg, which is higher than the mean pressure of healthy people who do not have a cardiovascular disease with a confidence of 95%.
+  
+  Another important factor of cardiovascular disease is weight, but we didn't cover it in this report. We intuitively believe that there is a positive relationship between weight and heart disease. However, we still need new data set and analysis to figure out how strong the relationship is in the future.
+  
+  Finally, for potential short-comings, it is worth noting that the method we analyze the relationship between drinking, smoking, and cardiovascular disease can be improved and become more precise. The density graph to make a visual interpretation may involve subjectiveness and lack accuracy. Also, the outcomes generated from the data set selected may not be universal, due to the reason that it was collected in a high-heart disease area in Africa. Other variables might also pose threats to heart health significantly, which we don't include in this report.
+  
+  In conclusion, the report shows a strong positive relationship between age and cardiovascular disease. Also, people who drink and smoke would have a higher risk to have such disease, and smoking affects them more. And it is a genetic disease, about 50% of patients have a family heart disease history. Finally, the mean systolic blood pressure of patients is between 4.07 mm Hg and 12.48 mm Hg higher than the mean pressure of healthy people who do not have cardiovascular disease.
+  
+# References
+
+Data set source: [Cardiovascular disease dataset](https://www.kaggle.com/yassinehamdaoui1/cardiovascular-disease)
