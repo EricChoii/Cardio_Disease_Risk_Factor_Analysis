@@ -1,5 +1,6 @@
 # Cardio_Disease_Risk_Factor_Analysis
 
+### Introduction
 Cardiovascular disease is one of the most frequent diseases that threaten people’s health problems. Discussing the relationship between different factors which might cause cardiovascular disease might help us to prevent it. For example, whether there is a relationship between age, smoke, alcohol and cardiovascular disease? These questions could be extremely useful when examining the relationship between different pieces of information related to the disease.
 In brief summary, this report will reveal the positive relationship between age, alcohol, tobacco intake, and cardiovascular disease. Also, the analysis will show it is a genetic disease, and 50% percent of patients have a family history. Finally, people with cardiovascular disease will have higher systolic blood pressure between the range of 4.07 mm Hg and 12.48 mm Hg compared to healthy people.
 Background
