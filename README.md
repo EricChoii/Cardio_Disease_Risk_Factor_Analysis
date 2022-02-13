@@ -1,4 +1,5 @@
 # Cardio_Disease_Risk_Factor_Analysis
+![1](https://user-images.githubusercontent.com/39285147/153733507-8cddb332-c0ba-4718-89ee-3fabb09b29b3.PNG)
 
 ### Introduction
 Cardiovascular disease is one of the most frequent diseases that threaten people’s health problems. Discussing the relationship between different factors which might cause cardiovascular disease might help us to prevent it. For example, whether there is a relationship between age, smoke, alcohol and cardiovascular disease? These questions could be extremely useful when examining the relationship between different pieces of information related to the disease.
@@ -22,6 +23,8 @@ Is there a relationship between age and cardiovascular disease except all the ot
 Is there a relationship between alcohol, tobacco intake and cardiovascular disease except all the other factors?
 Is cardiovascular disease a genetic disease? If so, is there significant evidence showing that 50% of patients have a family heart disease history?
 What is the difference between the average range of systolic blood pressure for a healthy person and a patient?
+
+![image](https://user-images.githubusercontent.com/39285147/153733498-8b92c393-38bc-4aa8-97f7-17fbae8147f7.png)
 
 ### References
 Data set source: Cardiovascular disease dataset
